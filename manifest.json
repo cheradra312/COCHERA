@@ -4,10 +4,9 @@
   "description": "Una aplicación para gestionar el peso de cargas por cocheras.",
   "start_url": ".",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#f3f4f6",
   "theme_color": "#4f46e5",
-  "gcm_sender_id": "103953800507",
   "icons": [
     {
       "src": "icon-192x192.png",
