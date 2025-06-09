@@ -4,14 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Carga por Cocheras</title>
-    <!-- Enlace al Manifest para PWA -->
     <link rel="manifest" href="manifest.json">
-    <!-- Icono para Apple y tema de color -->
     <link rel="apple-touch-icon" href="icon-192x192.png">
     <meta name="theme-color" content="#4f46e5">
-    <!-- Incluyendo Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Incluyendo la fuente Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,7 +17,6 @@
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
-        /* Animación para el spinner */
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .spinner { border-radius: 50%; animation: spin 1s linear infinite; }
         .spinner-main { border: 4px solid rgba(0, 0, 0, 0.1); border-left-color: #4f46e5; width: 40px; height: 40px; }
@@ -31,336 +26,421 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
 
-    <div class="w-full max-w-5xl mx-auto p-4 md:p-8">
-        <!-- Contenedor de Carga Inicial -->
-        <div id="loading-container" class="flex flex-col items-center justify-center text-center mt-20">
-            <div class="spinner spinner-main"></div>
-            <p class="text-gray-600 mt-4 font-semibold">Iniciando aplicación...</p>
+    <div id="loading-container" class="flex flex-col items-center justify-center text-center h-screen">
+        <div class="spinner spinner-main"></div>
+        <p class="text-gray-600 mt-4 font-semibold">Iniciando aplicación...</p>
+    </div>
+
+    <!-- PÁGINA DE AUTENTICACIÓN -->
+    <div id="auth-page" class="hidden w-full max-w-md mx-auto p-4 md:p-8 mt-10 bg-white rounded-xl shadow-lg">
+        <h1 class="text-3xl font-bold text-center mb-6">Acceso a Cocheras</h1>
+        <div class="grid grid-cols-2 gap-4 mb-6 border-b">
+            <button id="show-login-btn" class="py-2 border-b-2 border-blue-600 text-blue-600 font-semibold">Iniciar Sesión</button>
+            <button id="show-register-btn" class="py-2 border-b-2 border-transparent text-gray-500">Registrarse</button>
         </div>
-
-        <!-- PÁGINA 1: SELECCIÓN DE COCHERA -->
-        <div id="selection-page" class="hidden">
-            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 text-center">Gestión de Cocheras</h1>
-                <p class="text-gray-500 mt-2 text-center">Selecciona una cochera para ver sus registros o crea una nueva.</p>
-                
-                <!-- Contenedor de Botones de Cocheras -->
-                <div id="cochera-buttons-container" class="mt-8 grid grid-cols-1 gap-6">
-                    <!-- Los botones de las cocheras se insertarán aquí -->
+        <form id="login-form">
+            <div class="space-y-4">
+                <input type="email" id="login-email" placeholder="Email" class="w-full px-4 py-2 border rounded-lg" required>
+                <input type="password" id="login-password" placeholder="Contraseña" class="w-full px-4 py-2 border rounded-lg" required>
+                <div class="flex items-center">
+                    <input type="checkbox" id="remember-me" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-900">Recuérdame</label>
                 </div>
-
-                 <!-- Sección para Crear Cochera -->
-                <div class="bg-gray-50 p-6 rounded-lg border mt-10">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">Crear Nueva Cochera</h2>
-                    <div class="max-w-md mx-auto space-y-4">
-                         <label for="cochera-name-input" class="text-sm font-medium text-gray-700 sr-only">Nombre de la Cochera</label>
-                        <input type="text" id="cochera-name-input" placeholder="Nombre de la nueva cochera" class="w-full px-4 py-2 text-lg bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        
-                        <div>
-                            <label for="cochera-image-input" class="text-sm font-medium text-gray-700">Imagen (Opcional)</label>
-                            <input type="file" id="cochera-image-input" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
-                             <p class="text-xs text-gray-500 mt-1">Sube imágenes pequeñas para un rendimiento óptimo.</p>
-                        </div>
-                        
-                        <button id="create-cochera-btn" class="w-full bg-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition">Crear Cochera</button>
-                    </div>
-                </div>
-
-                <!-- Contenedor para mensajes -->
-                <div class="h-12 mt-6">
-                    <div id="selection-message" class="hidden px-4 py-3 rounded-lg relative text-center"></div>
-                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold">Entrar</button>
             </div>
-        </div>
+        </form>
+        <form id="register-form" class="hidden">
+            <div class="space-y-4">
+                <input type="email" id="register-email" placeholder="Email" class="w-full px-4 py-2 border rounded-lg" required>
+                <input type="password" id="register-password" placeholder="Contraseña (mín. 6 caracteres)" class="w-full px-4 py-2 border rounded-lg" required>
+                <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold">Crear Cuenta</button>
+            </div>
+        </form>
+        <div id="auth-message" class="mt-4 text-center h-6"></div>
+    </div>
 
-        <!-- PÁGINA 2: CALCULADORA DE CARGAS (Dentro de una cochera) -->
-        <div id="calculator-page" class="hidden">
-             <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
-                <header class="mb-6 pb-4 border-b border-gray-200">
-                    <div class="flex flex-wrap justify-between items-center gap-4">
-                        <div>
-                             <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Registros de <span id="current-cochera-name" class="text-blue-600"></span></h1>
-                             <button id="back-to-selection-btn" class="mt-2 text-sm text-blue-500 hover:underline">&larr; Volver a la selección</button>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <button id="notification-btn" class="p-2 rounded-full hover:bg-gray-200 transition" title="Activar notificaciones">
-                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                            </button>
-                            <button id="export-csv-btn" class="bg-gray-700 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-gray-800 transition">
-                                Exportar a CSV
-                            </button>
-                        </div>
-                    </div>
-                </header>
+    <!-- PÁGINA PRINCIPAL DE LA APP -->
+    <div id="app-container" class="hidden w-full max-w-5xl mx-auto">
+         <header class="bg-white rounded-t-xl shadow p-4 flex justify-between items-center">
+            <div>
+                <span class="text-sm text-gray-500">Sesión iniciada como:</span>
+                <p id="user-email" class="font-semibold"></p>
+            </div>
+            <button id="logout-btn" class="text-sm text-red-500 hover:underline font-semibold">Cerrar Sesión</button>
+        </header>
 
-                <!-- Formulario para agregar cargas -->
-                <div class="space-y-6 mb-8">
-                    <div>
-                        <label for="procedencia" class="text-sm font-medium text-gray-700">Procedencia de la Carga</label>
-                        <input type="text" id="procedencia" placeholder="Ej: Proveedor A, Matrícula B-1234-C" class="mt-1 w-full px-4 py-2 text-lg bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                        <div class="space-y-2">
-                            <label for="tara" class="text-sm font-medium text-gray-700">Peso Tara (kg)</label>
-                            <input type="number" id="tara" placeholder="Ej: 1500" class="w-full px-4 py-2 text-lg bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div class="space-y-2">
-                            <label for="bruto" class="text-sm font-medium text-gray-700">Peso Bruto (kg)</label>
-                            <input type="number" id="bruto" placeholder="Ej: 10000" class="w-full px-4 py-2 text-lg bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg text-center md:text-left h-full flex flex-col justify-center">
-                            <p class="text-sm font-medium text-blue-800">Peso Neto Actual</p>
-                            <p id="neto-actual" class="text-2xl font-bold text-blue-900">0.00 kg</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex justify-center mb-6">
-                    <button id="agregar-carga-btn" class="flex items-center justify-center w-full md:w-auto bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all disabled:opacity-75 disabled:cursor-wait">
-                        <span id="button-text">Guardar Carga en la Lista</span>
-                        <div id="button-spinner" class="spinner spinner-button ml-3 hidden"></div>
-                    </button>
-                </div>
-                <div class="h-12 mb-4">
-                     <div id="calculator-message" class="hidden px-4 py-3 rounded-lg relative text-center"></div>
-                </div>
-                <div class="overflow-x-auto">
-                    <h2 class="text-xl font-semibold mb-4 text-center md:text-left">Lista de Cargas</h2>
-                    <table class="w-full bg-white border border-gray-200 rounded-lg shadow">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">#</th>
-                                <th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Fecha</th>
-                                <th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Procedencia</th>
-                                <th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Tara</th>
-                                <th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Bruto</th>
-                                <th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Neto</th>
-                                <th class="p-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lista-cargas" class="divide-y divide-gray-200"></tbody>
-                        <tfoot class="bg-gray-100 font-bold">
-                            <tr>
-                                <td colspan="5" class="p-3 text-right text-lg text-gray-800">Total Neto Acumulado:</td>
-                                <td id="total-neto" class="p-3 text-left text-2xl text-blue-700">0.00 kg</td>
-                                <td class="p-3"></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-             </div>
-        </div>
+        <main id="main-content"></main>
     </div>
     
-    <!-- Modal de Confirmación -->
+    <!-- MODALES -->
     <div id="confirm-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="relative mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white">
             <div class="mt-3 text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                    <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                </div>
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100"><svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">Confirmar Acción</h3>
-                <div class="mt-2 px-7 py-3">
-                    <p id="confirm-message" class="text-sm text-gray-500"></p>
-                </div>
+                <div class="mt-2 px-7 py-3"><p id="confirm-message" class="text-sm text-gray-500"></p></div>
                 <div id="code-input-container" class="hidden mt-4 px-7">
                     <label for="security-code" class="sr-only">Código de Seguridad</label>
                     <input type="password" id="security-code" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Código de Seguridad">
                     <p id="modal-error-message" class="text-red-500 text-xs mt-1 hidden"></p>
                 </div>
                 <div class="items-center px-4 py-3 mt-4 space-x-4">
-                    <button id="cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-900 rounded-md w-auto hover:bg-gray-300">
-                        Cancelar
-                    </button>
-                    <button id="confirm-btn" class="px-4 py-2 bg-red-600 text-white rounded-md w-auto hover:bg-red-700">
-                        Eliminar
-                    </button>
+                    <button id="cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-900 rounded-md w-auto hover:bg-gray-300">Cancelar</button>
+                    <button id="confirm-btn" class="px-4 py-2 bg-red-600 text-white rounded-md w-auto hover:bg-red-700">Eliminar</button>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Modal de Edición de Carga -->
     <div id="edit-carga-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
             <h3 class="text-xl leading-6 font-medium text-gray-900 mb-4">Editar Carga</h3>
             <div class="space-y-4">
-                <div>
-                    <label for="edit-procedencia" class="text-sm font-medium text-gray-700">Procedencia</label>
-                    <input type="text" id="edit-procedencia" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                </div>
+                <div><label for="edit-procedencia" class="text-sm font-medium text-gray-700">Procedencia</label><input type="text" id="edit-procedencia" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></div>
                 <div class="grid grid-cols-2 gap-4">
-                     <div>
-                        <label for="edit-tara" class="text-sm font-medium text-gray-700">Tara (kg)</label>
-                        <input type="number" id="edit-tara" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                    </div>
-                     <div>
-                        <label for="edit-bruto" class="text-sm font-medium text-gray-700">Bruto (kg)</label>
-                        <input type="number" id="edit-bruto" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
-                    </div>
+                     <div><label for="edit-tara" class="text-sm font-medium text-gray-700">Tara (kg)</label><input type="number" id="edit-tara" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></div>
+                     <div><label for="edit-bruto" class="text-sm font-medium text-gray-700">Bruto (kg)</label><input type="number" id="edit-bruto" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></div>
                 </div>
-                 <div class="pt-2">
+                <div class="pt-2"><label for="edit-cultivo-select" class="text-sm font-medium text-gray-700">Tipo de Cultivo</label><select id="edit-cultivo-select" class="mt-1 w-full px-4 py-2 text-lg bg-gray-50 border border-gray-300 rounded-lg"><option>Cebada</option><option>Trigo</option><option>Leguminosas</option><option>Otros</option></select></div>
+                <div class="pt-2">
                     <label for="edit-security-code" class="text-sm font-medium text-gray-700">Código de Seguridad</label>
                     <input type="password" id="edit-security-code" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="****">
                     <p id="edit-modal-error" class="text-red-500 text-xs mt-1 hidden"></p>
                 </div>
             </div>
             <div class="items-center px-4 py-3 mt-6 text-right space-x-4">
-                <button id="cancel-edit-btn" class="px-4 py-2 bg-gray-200 text-gray-900 rounded-md w-auto hover:bg-gray-300">
-                    Cancelar
-                </button>
-                <button id="confirm-edit-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md w-auto hover:bg-blue-700">
-                    Guardar Cambios
-                </button>
+                <button id="cancel-edit-btn" class="px-4 py-2 bg-gray-200 text-gray-900 rounded-md w-auto hover:bg-gray-300">Cancelar</button>
+                <button id="confirm-edit-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md w-auto hover:bg-blue-700">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+     <div id="edit-cochera-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
+            <h3 class="text-xl leading-6 font-medium text-gray-900 mb-4">Editar Cochera</h3>
+            <div class="space-y-4">
+                <div><label for="edit-cochera-name" class="text-sm font-medium text-gray-700">Nombre de la Cochera</label><input type="text" id="edit-cochera-name" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md"></div>
+                <div><label for="edit-cochera-image" class="text-sm font-medium text-gray-700">Nueva Imagen (Opcional)</label><input type="file" id="edit-cochera-image" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/></div>
+                <div class="pt-2"><label for="edit-cochera-security-code" class="text-sm font-medium text-gray-700">Código de Seguridad</label><input type="password" id="edit-cochera-security-code" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="****"><p id="edit-cochera-modal-error" class="text-red-500 text-xs mt-1 hidden"></p></div>
+            </div>
+            <div class="items-center px-4 py-3 mt-6 text-right space-x-4">
+                <button id="cancel-edit-cochera-btn" class="px-4 py-2 bg-gray-200 text-gray-900 rounded-md w-auto hover:bg-gray-300">Cancelar</button>
+                <button id="confirm-edit-cochera-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md w-auto hover:bg-blue-700">Guardar Cambios</button>
             </div>
         </div>
     </div>
 
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, serverTimestamp, query, where, getDocs, writeBatch, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-messaging.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, serverTimestamp, query, getDocs, writeBatch, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // DOM Elements
-        const dom = {
-            loadingContainer: document.getElementById('loading-container'),
-            selectionPage: document.getElementById('selection-page'),
-            calculatorPage: document.getElementById('calculator-page'),
-            cocheraNameInput: document.getElementById('cochera-name-input'),
-            cocheraImageInput: document.getElementById('cochera-image-input'),
-            createCocheraBtn: document.getElementById('create-cochera-btn'),
-            cocheraButtonsContainer: document.getElementById('cochera-buttons-container'),
-            backToSelectionBtn: document.getElementById('back-to-selection-btn'),
-            currentCocheraName: document.getElementById('current-cochera-name'),
-            selectionMessage: document.getElementById('selection-message'),
-            calculatorMessage: document.getElementById('calculator-message'),
-            notificationBtn: document.getElementById('notification-btn'),
-            exportCsvBtn: document.getElementById('export-csv-btn'),
-            inputProcedencia: document.getElementById('procedencia'),
-            inputTara: document.getElementById('tara'),
-            inputBruto: document.getElementById('bruto'),
-            netoActualDisplay: document.getElementById('neto-actual'),
-            agregarCargaBtn: document.getElementById('agregar-carga-btn'),
-            buttonText: document.getElementById('button-text'),
-            buttonSpinner: document.getElementById('button-spinner'),
-            listaCargas: document.getElementById('lista-cargas'),
-            totalNetoDisplay: document.getElementById('total-neto'),
-            confirmModal: document.getElementById('confirm-modal'),
-            confirmMessage: document.getElementById('confirm-message'),
-            codeInputContainer: document.getElementById('code-input-container'),
-            securityCodeInput: document.getElementById('security-code'),
-            modalErrorMessage: document.getElementById('modal-error-message'),
-            confirmBtn: document.getElementById('confirm-btn'),
-            cancelBtn: document.getElementById('cancel-btn'),
-            editCargaModal: document.getElementById('edit-carga-modal'),
-            editProcedenciaInput: document.getElementById('edit-procedencia'),
-            editTaraInput: document.getElementById('edit-tara'),
-            editBrutoInput: document.getElementById('edit-bruto'),
-            editSecurityCodeInput: document.getElementById('edit-security-code'),
-            editModalError: document.getElementById('edit-modal-error'),
-            cancelEditBtn: document.getElementById('cancel-edit-btn'),
-            confirmEditBtn: document.getElementById('confirm-edit-btn'),
-        };
+        // --- CONSTANTS ---
+        const SECURITY_CODE = "1234";
 
-        // App State
-        let db, auth, messaging;
-        let cocheras = [], localCargas = [];
-        let selectedCocheraId = null, unsubscribeCargas = null, actionToConfirm = null, docIdToEdit = null;
+        // --- DOM Elements ---
+        const loadingContainer = document.getElementById('loading-container');
+        const authPage = document.getElementById('auth-page');
+        const appContainer = document.getElementById('app-container');
+        const mainContent = document.getElementById('main-content');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const showLoginBtn = document.getElementById('show-login-btn');
+        const showRegisterBtn = document.getElementById('show-register-btn');
+        const rememberMeCheckbox = document.getElementById('remember-me');
+        const userEmailDisplay = document.getElementById('user-email');
+        const logoutBtn = document.getElementById('logout-btn');
+        const authMessage = document.getElementById('auth-message');
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmMessage = document.getElementById('confirm-message');
+        const codeInputContainer = document.getElementById('code-input-container');
+        const securityCodeInput = document.getElementById('security-code');
+        const modalErrorMessage = document.getElementById('modal-error-message');
+        const confirmBtn = document.getElementById('confirm-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const editCargaModal = document.getElementById('edit-carga-modal');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const confirmEditBtn = document.getElementById('confirm-edit-btn');
+        const editProcedenciaInput = document.getElementById('edit-procedencia');
+        const editTaraInput = document.getElementById('edit-tara');
+        const editBrutoInput = document.getElementById('edit-bruto');
+        const editCultivoSelect = document.getElementById('edit-cultivo-select');
+        const editSecurityCodeInput = document.getElementById('edit-security-code');
+        const editModalError = document.getElementById('edit-modal-error');
+        const editCocheraModal = document.getElementById('edit-cochera-modal');
+        const cancelEditCocheraBtn = document.getElementById('cancel-edit-cochera-btn');
+        const confirmEditCocheraBtn = document.getElementById('confirm-edit-cochera-btn');
+        const editCocheraNameInput = document.getElementById('edit-cochera-name');
+        const editCocheraImageInput = document.getElementById('edit-cochera-image');
+        const editCocheraSecurityCodeInput = document.getElementById('edit-cochera-security-code');
+        const editCocheraModalError = document.getElementById('edit-cochera-modal-error');
+        
+        // --- App State ---
+        let db, auth;
         let userId = null;
+        let cocheras = [];
+        let localCargas = [];
+        let selectedCocheraId = null;
+        let unsubscribeCargas = null;
+        let actionToConfirm = null;
+        let docIdToEdit = null;
+        let cocheraIdToEdit = null;
+        
+        // --- TEMPLATES ---
+        const selectionPageHTML = `
+            <div class="bg-white rounded-b-xl shadow-lg p-6 md:p-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 text-center">Mis Cocheras</h1>
+                <p class="text-gray-500 mt-2 text-center">Selecciona una cochera o crea una nueva.</p>
+                <div id="cochera-buttons-container" class="mt-8 grid grid-cols-1 gap-6"></div>
+                <div class="bg-gray-50 p-6 rounded-lg border mt-10">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">Crear Nueva Cochera</h2>
+                    <div class="max-w-md mx-auto space-y-4">
+                        <input type="text" id="cochera-name-input" placeholder="Nombre de la nueva cochera" class="w-full px-4 py-2 text-lg bg-white border border-gray-300 rounded-lg">
+                        <div>
+                            <label for="cochera-image-input" class="text-sm font-medium text-gray-700">Imagen (Opcional)</label>
+                            <input type="file" id="cochera-image-input" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                        </div>
+                        <button id="create-cochera-btn" class="w-full bg-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700">Crear</button>
+                    </div>
+                </div>
+                <div class="h-12 mt-6"><div id="selection-message" class="hidden px-4 py-3 rounded-lg relative text-center"></div></div>
+            </div>`;
+
+        const calculatorPageHTML = `
+            <div class="bg-white rounded-b-xl shadow-lg p-6 md:p-8">
+                <header class="mb-6 pb-4 border-b border-gray-200">
+                    <div class="flex flex-wrap justify-between items-center gap-4">
+                        <div>
+                             <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Registros de <span id="current-cochera-name" class="text-blue-600"></span></h1>
+                             <button id="back-to-selection-btn" class="mt-2 text-sm text-blue-500 hover:underline">&larr; Volver</button>
+                        </div>
+                        <button id="export-csv-btn" class="bg-gray-700 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-gray-800">Exportar a CSV</button>
+                    </div>
+                </header>
+                <div class="space-y-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="procedencia" class="text-sm font-medium text-gray-700">Procedencia</label>
+                            <input type="text" id="procedencia" placeholder="Ej: Proveedor A" class="mt-1 w-full px-4 py-2 text-lg bg-gray-50 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                             <label for="cultivo-select" class="text-sm font-medium text-gray-700">Tipo de Cultivo</label>
+                            <select id="cultivo-select" class="mt-1 w-full px-4 py-2 text-lg bg-gray-50 border border-gray-300 rounded-lg">
+                                <option>Cebada</option><option>Trigo</option><option>Leguminosas</option><option>Otros</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                        <div class="space-y-2"><label for="tara" class="text-sm font-medium text-gray-700">Tara (kg)</label><input type="number" id="tara" placeholder="1500" class="w-full px-4 py-2 text-lg bg-gray-50 border border-gray-300 rounded-lg"></div>
+                        <div class="space-y-2"><label for="bruto" class="text-sm font-medium text-gray-700">Bruto (kg)</label><input type="number" id="bruto" placeholder="10000" class="w-full px-4 py-2 text-lg bg-gray-50 border border-gray-300 rounded-lg"></div>
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg h-full flex flex-col justify-center">
+                            <p class="text-sm font-medium text-blue-800">Neto Actual</p><p id="neto-actual" class="text-2xl font-bold text-blue-900">0 kg</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-center mb-6"><button id="agregar-carga-btn" class="flex items-center justify-center w-full md:w-auto bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 disabled:opacity-75"><span id="button-text">Guardar Carga</span><div id="button-spinner" class="spinner spinner-button ml-3 hidden"></div></button></div>
+                <div class="h-12 mb-4"><div id="calculator-message" class="hidden px-4 py-3 rounded-lg relative text-center"></div></div>
+                <div class="overflow-x-auto">
+                     <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Cargas</h2>
+                        <div id="filter-container" class="hidden">
+                            <select id="cultivo-filter" class="rounded-lg border-gray-300 shadow-sm"></select>
+                        </div>
+                    </div>
+                    <table class="w-full bg-white border border-gray-200 rounded-lg shadow">
+                        <thead class="bg-gray-50"><tr><th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">#</th><th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Fecha</th><th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Procedencia</th><th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Cultivo</th><th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Tara</th><th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Bruto</th><th class="p-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Neto</th><th class="p-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Acción</th></tr></thead>
+                        <tbody id="lista-cargas" class="divide-y divide-gray-200"></tbody>
+                        <tfoot class="bg-gray-100 font-bold"><tr><td colspan="6" class="p-3 text-right text-lg text-gray-800">Total Neto:</td><td id="total-neto" class="p-3 text-left text-2xl text-blue-700">0 kg</td><td class="p-3"></td></tr></tfoot>
+                    </table>
+                </div>
+            </div>`;
 
         // --- UTILITY FUNCTIONS ---
-        const formatPeso = (numero) => `${Number(numero).toFixed(2)} kg`;
-        
-        function calcularNetoActual() {
-            dom.netoActualDisplay.textContent = formatPeso(Math.max(0, (parseFloat(dom.inputBruto.value) || 0) - (parseFloat(dom.inputTara.value) || 0)));
-        }
-
-        function showMessage(element, message, isSuccess = true) {
-            element.textContent = message;
-            element.className = `px-4 py-3 rounded-lg relative text-center ${isSuccess ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
-            element.classList.remove('hidden');
-            setTimeout(() => element.classList.add('hidden'), 3000);
+        const formatPeso = (n) => `${Math.round(n)} kg`;
+        function showMessage(el, msg, isSuccess = true) {
+            el.textContent = msg;
+            el.className = `px-4 py-3 rounded-lg text-center ${isSuccess ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 3000);
         }
         
-        // --- PAGE NAVIGATION ---
-        function navigateTo(page) {
-            dom.selectionPage.classList.toggle('hidden', page !== 'selection');
-            dom.calculatorPage.classList.toggle('hidden', page !== 'calculator');
-        }
-
-        // --- MODAL ---
-        function openConfirmModal(message, onConfirm, requireCode = false) {
-            dom.confirmMessage.textContent = message;
-            actionToConfirm = onConfirm;
-            dom.codeInputContainer.classList.toggle('hidden', !requireCode);
-            dom.securityCodeInput.value = '';
-            dom.modalErrorMessage.classList.add('hidden');
-            dom.confirmModal.classList.remove('hidden');
-        }
-        function closeConfirmModal() {
-            dom.confirmModal.classList.add('hidden');
-            actionToConfirm = null;
-        }
-
-        // --- NOTIFICATIONS ---
-        async function requestNotificationPermission() {
-            try {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    console.log('Permiso para notificaciones concedido.');
-                    const fcmToken = await getToken(messaging, { vapidKey: 'BGAY-W5aQv2A_B1sFvjD3m8L8t9f-YkX-8v_jZq_x-8_dC_3vB2a_1qY_wE_rZ_i-0_aC' }); // **IMPORTANTE: Esta clave es pública y específica para este tipo de app.**
-                    if (fcmToken) {
-                        const tokensRef = collection(db, 'fcmTokens');
-                        await setDoc(doc(tokensRef, fcmToken), { userId: userId, createdAt: serverTimestamp() });
-                        showMessage(dom.calculatorMessage, "Notificaciones activadas.", true);
-                    } else {
-                        showMessage(dom.calculatorMessage, "No se pudo obtener el token de notificación.", false);
-                    }
-                } else {
-                    showMessage(dom.calculatorMessage, "Permiso de notificación denegado.", false);
-                }
-            } catch (error) {
-                console.error('Error al solicitar permiso de notificación:', error);
-                 showMessage(dom.calculatorMessage, "Error al activar las notificaciones.", false);
+        // --- PAGE NAVIGATION & RENDERING ---
+        function navigateTo(page, cochera = null) {
+            if (page === 'selection') {
+                mainContent.innerHTML = selectionPageHTML;
+                attachSelectionPageListeners();
+                renderCocheraButtons();
+            } else if (page === 'calculator') {
+                mainContent.innerHTML = calculatorPageHTML;
+                document.getElementById('current-cochera-name').textContent = cochera.name;
+                document.getElementById('tara').value = cochera.lastTara || '';
+                attachCalculatorPageListeners();
+                listenForCargas();
+                calcularNetoActual();
             }
         }
         
-        // --- COCHERA MANAGEMENT ---
         function renderCocheraButtons() {
-            dom.cocheraButtonsContainer.innerHTML = '';
-            if (cocheras.length === 0) {
-                 dom.cocheraButtonsContainer.innerHTML = `<p class="text-gray-500 text-center col-span-full">No hay cocheras creadas. ¡Crea una para empezar!</p>`;
-            }
-            cocheras.forEach(cochera => {
-                const imageUrl = cochera.imageUrl || '';
-                const bgStyle = imageUrl ? `background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${imageUrl})` : '';
-                const bgColorClass = imageUrl ? '' : 'bg-blue-600 hover:bg-blue-700';
-                
-                const buttonHTML = `
+            const container = document.getElementById('cochera-buttons-container');
+            if (!container) return;
+            container.innerHTML = cocheras.length === 0 
+                ? `<p class="text-gray-500 text-center col-span-full">Crea una cochera para empezar.</p>`
+                : cocheras.map(cochera => `
                     <div class="relative group">
-                        <button name="view-cochera" data-id="${cochera.id}" 
-                                class="w-full h-48 flex items-center justify-center p-4 text-white font-bold text-3xl rounded-lg shadow-lg transition transform group-hover:scale-105 cochera-button-bg ${bgColorClass}" 
-                                style="${bgStyle}">
+                        <button name="view-cochera" data-id="${cochera.id}" class="w-full h-48 flex items-center justify-center p-4 text-white font-bold text-3xl rounded-lg shadow-lg transition transform group-hover:scale-105 cochera-button-bg" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${cochera.imageUrl || ''}); background-color: #2563eb;">
                             <span class="relative z-10">${cochera.name}</span>
                         </button>
-                        <button name="delete-cochera" data-id="${cochera.id}" data-name="${cochera.name}" class="absolute top-3 right-3 p-1 bg-red-600 rounded-full text-white hover:bg-red-700 z-20">
-                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
-                    </div>`;
-                dom.cocheraButtonsContainer.innerHTML += buttonHTML;
-            });
+                         <div class="absolute top-3 right-3 flex space-x-2 z-20">
+                           <button name="edit-cochera" data-id="${cochera.id}" class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600"><svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                           <button name="delete-cochera" data-id="${cochera.id}" data-name="${cochera.name}" class="p-1 bg-red-600 rounded-full text-white hover:bg-red-700"><svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                        </div>
+                    </div>`).join('');
         }
         
+        function renderTabla(cargasToRender) {
+            const listaCargasEl = document.getElementById('lista-cargas');
+            if(!listaCargasEl) return;
+            
+            listaCargasEl.innerHTML = '';
+            const cargasOrdenadas = [...cargasToRender].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+            if (cargasOrdenadas.length === 0) {
+                listaCargasEl.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-500">No hay registros para este filtro.</td></tr>`;
+            } else {
+                cargasOrdenadas.forEach((carga, index) => {
+                    const fecha = carga.createdAt ? new Date(carga.createdAt.seconds * 1000).toLocaleString('es-ES') : '...';
+                    const isEditable = (Date.now() - (carga.createdAt?.seconds * 1000 || 0)) < (24 * 60 * 60 * 1000);
+                    listaCargasEl.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-3 font-medium text-gray-900">${index + 1}</td>
+                            <td class="p-3 text-sm text-gray-600">${fecha}</td>
+                            <td class="p-3 break-words">${carga.procedencia}</td>
+                            <td class="p-3">${carga.cultivo || 'N/A'}</td>
+                            <td class="p-3">${formatPeso(carga.tara)}</td>
+                            <td class="p-3">${formatPeso(carga.bruto)}</td>
+                            <td class="p-3 font-semibold text-green-700">${formatPeso(carga.neto)}</td>
+                            <td class="p-3 text-center">
+                                <button name="edit-btn" class="text-blue-600 hover:text-blue-800 transition ${!isEditable ? 'opacity-25 cursor-not-allowed' : ''}" data-id="${carga.id}" ${!isEditable ? 'disabled' : ''}>
+                                    <svg class="h-5 w-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                </button>
+                            </td>
+                        </tr>`;
+                });
+            }
+            document.getElementById('total-neto').textContent = formatPeso(cargasOrdenadas.reduce((sum, c) => sum + c.neto, 0));
+        }
+
+        function updateCultivoFilter() {
+            const filterContainer = document.getElementById('filter-container');
+            const cultivoFilter = document.getElementById('cultivo-filter');
+            if(!filterContainer || !cultivoFilter) return;
+
+            const cultivos = [...new Set(localCargas.map(c => c.cultivo))];
+            if (cultivos.length > 1) {
+                filterContainer.classList.remove('hidden');
+                const currentFilter = cultivoFilter.value;
+                cultivoFilter.innerHTML = '<option value="Todos">Todos los Cultivos</option>';
+                cultivos.forEach(c => cultivoFilter.innerHTML += `<option value="${c}">${c}</option>`);
+                cultivoFilter.value = currentFilter;
+            } else {
+                filterContainer.classList.add('hidden');
+            }
+        }
+        
+        function applyCultivoFilter() {
+            const cultivoFilter = document.getElementById('cultivo-filter');
+            const selectedCultivo = cultivoFilter ? cultivoFilter.value : 'Todos';
+            const filtered = selectedCultivo === 'Todos' ? localCargas : localCargas.filter(c => c.cultivo === selectedCultivo);
+            renderTabla(filtered);
+        }
+
+        // --- AUTH LOGIC ---
+        function showAuthMessage(message, isSuccess = true) {
+            authMessage.textContent = message;
+            authMessage.className = `text-center h-6 ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+        }
+        const handleRegister = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            try { await createUserWithEmailAndPassword(auth, email, password); } 
+            catch (error) { showAuthMessage("Error al registrar: " + error.message, false); }
+        };
+        const handleLogin = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const persistence = rememberMeCheckbox.checked ? browserLocalPersistence : browserSessionPersistence;
+            try {
+                await setPersistence(auth, persistence);
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) { showAuthMessage("Error al iniciar sesión: " + error.message, false); }
+        };
+        const handleLogout = async () => { await signOut(auth); };
+        
+        showLoginBtn.addEventListener('click', () => {
+            loginForm.classList.remove('hidden'); registerForm.classList.add('hidden');
+            showLoginBtn.className = "py-2 border-b-2 border-blue-600 text-blue-600 font-semibold";
+            showRegisterBtn.className = "py-2 border-b-2 border-transparent text-gray-500";
+        });
+        showRegisterBtn.addEventListener('click', () => {
+            loginForm.classList.add('hidden'); registerForm.classList.remove('hidden');
+            showRegisterBtn.className = "py-2 border-b-2 border-blue-600 text-blue-600 font-semibold";
+            showLoginBtn.className = "py-2 border-b-2 border-transparent text-gray-500";
+        });
+        
+        // --- DATA LOGIC ---
+        const getCocherasRef = () => collection(db, 'cocheras');
+        const getCargasRef = () => (selectedCocheraId) ? collection(db, 'cocheras', selectedCocheraId, 'cargas') : null;
+
+        // --- MAIN FUNCTIONS ---
+        function attachSelectionPageListeners() {
+            document.getElementById('create-cochera-btn').addEventListener('click', handleCreateCochera);
+            document.getElementById('cochera-buttons-container').addEventListener('click', handleHomePageClick);
+        }
+
+        function attachCalculatorPageListeners() {
+            document.getElementById('back-to-selection-btn').addEventListener('click', handleBackToSelection);
+            document.getElementById('export-csv-btn').addEventListener('click', () => exportToCSV(localCargas, document.getElementById('current-cochera-name').textContent));
+            document.getElementById('agregar-carga-btn').addEventListener('click', agregarCarga);
+            document.getElementById('lista-cargas').addEventListener('click', handleTableActions);
+            document.getElementById('tara').addEventListener('input', calcularNetoActual);
+            document.getElementById('bruto').addEventListener('input', calcularNetoActual);
+            const cultivoFilter = document.getElementById('cultivo-filter');
+            if(cultivoFilter) cultivoFilter.addEventListener('change', applyCultivoFilter);
+        }
+
+        function handleHomePageClick(e) {
+             const viewButton = e.target.closest('button[name="view-cochera"]');
+             const deleteButton = e.target.closest('button[name="delete-cochera"]');
+             const editButton = e.target.closest('button[name="edit-cochera"]');
+             if (viewButton) {
+                selectedCocheraId = viewButton.dataset.id;
+                const selectedCochera = cocheras.find(c => c.id === selectedCocheraId);
+                navigateTo('calculator', selectedCochera);
+             } else if(deleteButton) {
+                handleDeleteCocheraRequest(deleteButton.dataset.id, deleteButton.dataset.name);
+             } else if(editButton) {
+                 handleEditCocheraRequest(editButton.dataset.id);
+             }
+        }
+        
+        function handleBackToSelection() {
+            if (unsubscribeCargas) unsubscribeCargas();
+            localCargas = []; selectedCocheraId = null;
+            navigateTo('selection');
+        }
+
         async function handleCreateCochera() {
-            const name = dom.cocheraNameInput.value.trim();
-            if (!name) return showMessage(dom.selectionMessage, "El nombre no puede estar vacío.", false);
+            const nameInput = document.getElementById('cochera-name-input');
+            const imageInput = document.getElementById('cochera-image-input');
+            const messageEl = document.getElementById('selection-message');
+
+            const name = nameInput.value.trim();
+            if (!name) return showMessage(messageEl, "El nombre no puede estar vacío.", false);
             if (cocheras.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-                return showMessage(dom.selectionMessage, "Ya existe una cochera con ese nombre.", false);
+                return showMessage(messageEl, "Ya existe una cochera con ese nombre.", false);
             }
 
-            const file = dom.cocheraImageInput.files[0];
             let imageUrl = null;
+            const file = imageInput.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
@@ -368,184 +448,141 @@
                 imageUrl = reader.result;
             }
 
-            await addDoc(collection(db, 'cocheras'), { name, lastTara: 0, imageUrl });
-            showMessage(dom.selectionMessage, `Cochera "${name}" creada con éxito.`, true);
-            dom.cocheraNameInput.value = '';
-            dom.cocheraImageInput.value = '';
-        }
-
-        function handleHomePageClick(e) {
-            const viewButton = e.target.closest('button[name="view-cochera"]');
-            const deleteButton = e.target.closest('button[name="delete-cochera"]');
-
-            if (viewButton) {
-                selectedCocheraId = viewButton.dataset.id;
-                const selectedCochera = cocheras.find(c => c.id === selectedCocheraId);
-                dom.currentCocheraName.textContent = selectedCochera.name;
-                dom.inputTara.value = selectedCochera.lastTara || '';
-                calcularNetoActual();
-                navigateTo('calculator');
-                listenForCargas();
-            } else if (deleteButton) {
-                 const cocheraIdToDelete = deleteButton.dataset.id;
-                 const cocheraName = deleteButton.dataset.name;
-                 const message = `Para eliminar la cochera "${cocheraName}" y todos sus registros, ingrese el código de seguridad. Esta acción no se puede deshacer.`;
-
-                openConfirmModal(message, async () => {
-                    if (dom.securityCodeInput.value !== "1234") {
-                        dom.modalErrorMessage.textContent = "Código incorrecto."; dom.modalErrorMessage.classList.remove('hidden'); return;
-                    }
-                    try {
-                        const cargasRef = collection(db, 'cocheras', cocheraIdToDelete, 'cargas');
-                        const cargasSnapshot = await getDocs(cargasRef);
-                        const cargasData = cargasSnapshot.docs.map(doc => doc.data());
-                        if (cargasData.length > 0) exportToCSV(cargasData, cocheraName);
-
-                        const batch = writeBatch(db);
-                        cargasSnapshot.docs.forEach(doc => batch.delete(doc.ref));
-                        await batch.commit();
-                        await deleteDoc(doc(db, 'cocheras', cocheraIdToDelete));
-
-                        showMessage(dom.selectionMessage, `Cochera "${cocheraName}" eliminada.`, true);
-                    } catch (error) { showMessage(dom.selectionMessage, "No se pudo eliminar la cochera.", false); }
-                    closeConfirmModal();
-                }, true);
-            }
-        }
-
-        function handleBackToSelection() {
-            if (unsubscribeCargas) unsubscribeCargas();
-            localCargas = []; renderizarTabla(); calcularTotalNeto();
-            selectedCocheraId = null;
-            navigateTo('selection');
-        }
-
-        // --- CARGA MANAGEMENT ---
-        function listenForCargas() {
-            if (!selectedCocheraId) return;
-            const cargasRef = collection(db, 'cocheras', selectedCocheraId, 'cargas');
-            unsubscribeCargas = onSnapshot(query(cargasRef), snapshot => {
-                localCargas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderizarTabla();
-                calcularTotalNeto();
-            });
-        }
-        
-        function renderizarTabla() {
-            dom.listaCargas.innerHTML = '';
-            const cargasOrdenadas = [...localCargas].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-            if (cargasOrdenadas.length === 0) {
-                dom.listaCargas.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">No hay registros en esta cochera.</td></tr>`;
-            } else {
-                cargasOrdenadas.forEach((carga, index) => {
-                    const fecha = carga.createdAt ? new Date(carga.createdAt.seconds * 1000).toLocaleString('es-ES') : '...';
-                    const cargaTimestamp = carga.createdAt ? carga.createdAt.seconds * 1000 : 0;
-                    const isEditable = (Date.now() - cargaTimestamp) < (24 * 60 * 60 * 1000);
-
-                    dom.listaCargas.innerHTML += `
-                        <tr class="hover:bg-gray-50">
-                            <td class="p-3 font-medium text-gray-900">${index + 1}</td>
-                            <td class="p-3 text-sm text-gray-600">${fecha}</td>
-                            <td class="p-3 break-words">${carga.procedencia}</td>
-                            <td class="p-3">${formatPeso(carga.tara)}</td>
-                            <td class="p-3">${formatPeso(carga.bruto)}</td>
-                            <td class="p-3 font-semibold text-green-700">${formatPeso(carga.neto)}</td>
-                            <td class="p-3 text-center">
-                                <div class="flex justify-center items-center space-x-2">
-                                    <button name="edit-btn" class="text-blue-600 hover:text-blue-800 transition ${!isEditable ? 'opacity-25 cursor-not-allowed' : ''}" data-id="${carga.id}" ${!isEditable ? 'disabled' : ''}>
-                                        <svg class="h-5 w-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                    </button>
-                                    <button name="delete-btn" class="text-red-600 hover:text-red-800 transition" data-id="${carga.id}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>`;
-                });
-            }
-        }
-        
-        const calcularTotalNeto = () => {
-             dom.totalNetoDisplay.textContent = formatPeso(localCargas.reduce((sum, carga) => sum + carga.neto, 0));
+            await addDoc(getCocherasRef(), { name, lastTara: 0, imageUrl });
+            showMessage(messageEl, `Cochera "${name}" creada con éxito.`, true);
+            nameInput.value = '';
+            imageInput.value = '';
         }
 
         async function agregarCarga() {
-            dom.agregarCargaBtn.disabled = true; dom.buttonText.textContent = 'Guardando...'; dom.buttonSpinner.classList.remove('hidden');
-            const tara = parseFloat(dom.inputTara.value);
-            try {
-                const procedencia = dom.inputProcedencia.value.trim();
-                const bruto = parseFloat(dom.inputBruto.value);
-                if (!procedencia || isNaN(tara) || isNaN(bruto) || bruto < tara) throw new Error("Datos inválidos.");
-                
-                await addDoc(collection(db, 'cocheras', selectedCocheraId, 'cargas'), { procedencia, tara, bruto, neto: bruto - tara, createdAt: serverTimestamp() });
-                await updateDoc(doc(db, 'cocheras', selectedCocheraId), { lastTara: tara });
-
-                showMessage(dom.calculatorMessage, "Carga guardada con éxito.", true);
-                dom.inputProcedencia.value = ''; dom.inputBruto.value = ''; dom.inputProcedencia.focus();
-            } catch (error) {
-                showMessage(dom.calculatorMessage, error.message || "No se pudo guardar la carga.", false);
-            } finally {
-                dom.agregarCargaBtn.disabled = false; dom.buttonText.textContent = 'Guardar Carga'; dom.buttonSpinner.classList.add('hidden');
-            }
-        }
-
-        function handleTableActions(e) {
-            const deleteButton = e.target.closest('button[name="delete-btn"]');
-            const editButton = e.target.closest('button[name="edit-btn"]');
+            const procedenciaInput = document.getElementById('procedencia');
+            const taraInput = document.getElementById('tara');
+            const brutoInput = document.getElementById('bruto');
+            const cultivoSelect = document.getElementById('cultivo-select');
+            const messageEl = document.getElementById('calculator-message');
+            const button = document.getElementById('agregar-carga-btn');
             
-            if (deleteButton) {
-                const docIdToDelete = deleteButton.dataset.id;
-                openConfirmModal("Para eliminar la carga, por favor ingrese el código de seguridad.", async () => {
-                    if (dom.securityCodeInput.value !== "1234") {
-                        dom.modalErrorMessage.textContent = "Código incorrecto."; dom.modalErrorMessage.classList.remove('hidden'); return;
-                    }
+            button.disabled = true;
+            
+            const procedencia = procedenciaInput.value.trim();
+            const tara = parseFloat(taraInput.value);
+            const bruto = parseFloat(brutoInput.value);
+            const neto = bruto - tara;
+            const cultivo = cultivoSelect.value;
+
+            if (!procedencia || isNaN(tara) || isNaN(bruto) || bruto < tara) {
+                showMessage(messageEl, "Datos inválidos.", false);
+            } else {
+                const cargasRef = getCargasRef();
+                if(cargasRef) {
                     try {
-                        await deleteDoc(doc(db, "cocheras", selectedCocheraId, "cargas", docIdToDelete));
-                        showMessage(dom.calculatorMessage, "Carga eliminada.", true);
-                    } catch (error) { showMessage(dom.calculatorMessage, "No se pudo eliminar la carga.", false); }
-                    closeConfirmModal();
-                }, true);
-            } else if (editButton) {
+                        await addDoc(cargasRef, { procedencia, cultivo, tara, bruto, neto, createdAt: serverTimestamp() });
+                        await updateDoc(doc(getCocherasRef(), selectedCocheraId), { lastTara: tara });
+                        showMessage(messageEl, "Carga guardada con éxito.", true);
+                        procedenciaInput.value = ''; brutoInput.value = ''; procedenciaInput.focus();
+                    } catch (error) { showMessage(messageEl, "No se pudo guardar la carga.", false); }
+                }
+            }
+            button.disabled = false;
+        }
+        
+        function handleTableActions(e) {
+            const editButton = e.target.closest('button[name="edit-btn"]');
+            if (editButton) {
                 docIdToEdit = editButton.dataset.id;
                 const cargaToEdit = localCargas.find(c => c.id === docIdToEdit);
                 if (cargaToEdit) {
-                    dom.editProcedenciaInput.value = cargaToEdit.procedencia;
-                    dom.editTaraInput.value = cargaToEdit.tara;
-                    dom.editBrutoInput.value = cargaToEdit.bruto;
-                    dom.editSecurityCodeInput.value = '';
-                    dom.editModalError.classList.add('hidden');
-                    dom.editCargaModal.classList.remove('hidden');
+                    editProcedenciaInput.value = cargaToEdit.procedencia;
+                    editTaraInput.value = cargaToEdit.tara;
+                    editBrutoInput.value = cargaToEdit.bruto;
+                    editCultivoSelect.value = cargaToEdit.cultivo || 'Cebada';
+                    editCargaModal.classList.remove('hidden');
                 }
             }
         }
-
+        
         async function handleConfirmEdit() {
-            if(dom.editSecurityCodeInput.value !== "1234") {
-                dom.editModalError.textContent = "Código de seguridad incorrecto."; dom.editModalError.classList.remove('hidden'); return;
+            if(editSecurityCodeInput.value !== SECURITY_CODE) {
+                editModalError.textContent = "Código de seguridad incorrecto."; editModalError.classList.remove('hidden'); return;
             }
-            const procedencia = dom.editProcedenciaInput.value.trim();
-            const tara = parseFloat(dom.editTaraInput.value);
-            const bruto = parseFloat(dom.editBrutoInput.value);
-
-            if (!procedencia || isNaN(tara) || isNaN(bruto) || bruto < tara) return showMessage(dom.calculatorMessage, "Datos de edición inválidos.", false);
+            const procedencia = editProcedenciaInput.value.trim();
+            const tara = parseFloat(editTaraInput.value);
+            const bruto = parseFloat(editBrutoInput.value);
+            const cultivo = editCultivoSelect.value;
+            if (!procedencia || isNaN(tara) || isNaN(bruto) || bruto < tara) return showMessage(document.getElementById('calculator-message'), "Datos de edición inválidos.", false);
             
             try {
-                await updateDoc(doc(db, "cocheras", selectedCocheraId, "cargas", docIdToEdit), { procedencia, tara, bruto, neto: bruto - tara });
-                showMessage(dom.calculatorMessage, "Carga actualizada con éxito.", true);
-            } catch (error) { showMessage(dom.calculatorMessage, "No se pudo actualizar la carga.", false); }
-            finally { dom.editCargaModal.classList.add('hidden'); docIdToEdit = null; }
+                await updateDoc(doc(getCargasRef(), docIdToEdit), { procedencia, tara, bruto, cultivo, neto: bruto - tara });
+                showMessage(document.getElementById('calculator-message'), "Carga actualizada con éxito.", true);
+            } catch (error) { showMessage(document.getElementById('calculator-message'), "No se pudo actualizar la carga.", false); }
+            finally { editCargaModal.classList.add('hidden'); docIdToEdit = null; }
+        }
+
+        function handleDeleteCocheraRequest(id, name) {
+            const message = `Para eliminar la cochera "${name}" y todos sus registros, ingrese el código de seguridad. Esta acción no se puede deshacer.`;
+            openConfirmModal(message, async () => {
+                if (securityCodeInput.value !== SECURITY_CODE) {
+                    modalErrorMessage.textContent = "Código incorrecto."; modalErrorMessage.classList.remove('hidden'); return;
+                }
+                try {
+                    const cargasRef = collection(db, 'cocheras', id, 'cargas');
+                    const cargasSnapshot = await getDocs(cargasRef);
+                    if (!cargasSnapshot.empty) {
+                        const cargasData = cargasSnapshot.docs.map(doc => doc.data());
+                        exportToCSV(cargasData, name);
+                        const batch = writeBatch(db);
+                        cargasSnapshot.docs.forEach(doc => batch.delete(doc.ref));
+                        await batch.commit();
+                    }
+                    await deleteDoc(doc(getCocherasRef(), id));
+                    showMessage(document.getElementById('selection-message'), `Cochera "${name}" eliminada.`, true);
+                } catch (error) { showMessage(document.getElementById('selection-message'), "No se pudo eliminar la cochera.", false); }
+                closeConfirmModal();
+            }, true);
+        }
+
+        function handleEditCocheraRequest(id) {
+            cocheraIdToEdit = id;
+            const cocheraToEdit = cocheras.find(c => c.id === id);
+            if (cocheraToEdit) {
+                editCocheraNameInput.value = cocheraToEdit.name;
+                editCocheraModal.classList.remove('hidden');
+            }
         }
         
-        // --- EXPORT TO CSV ---
+        async function handleConfirmEditCochera() {
+             if(editCocheraSecurityCodeInput.value !== SECURITY_CODE) {
+                editCocheraModalError.textContent = "Código de seguridad incorrecto."; editCocheraModalError.classList.remove('hidden'); return;
+            }
+            const newName = editCocheraNameInput.value.trim();
+            const file = editCocheraImageInput.files[0];
+            if (!newName) return showMessage(document.getElementById('selection-message'), "El nombre no puede estar vacío.", false);
+
+            const updateData = { name: newName };
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                await new Promise(resolve => reader.onload = resolve);
+                updateData.imageUrl = reader.result;
+            }
+
+            try {
+                await updateDoc(doc(getCocherasRef(), cocheraIdToEdit), updateData);
+                showMessage(document.getElementById('selection-message'), "Cochera actualizada.", true);
+            } catch(e) { showMessage(document.getElementById('selection-message'), "No se pudo actualizar.", false); }
+            finally { editCocheraModal.classList.add('hidden'); cocheraIdToEdit = null; }
+        }
+
         function exportToCSV(cargasToExport, cocheraName) {
-            if (!cargasToExport || cargasToExport.length === 0) return showMessage(dom.calculatorMessage, "No hay cargas para exportar.", false);
+            const messageEl = document.getElementById('calculator-message');
+            if (!cargasToExport || cargasToExport.length === 0) return showMessage(messageEl, "No hay cargas para exportar.", false);
             
-            const headers = ["Fecha", "Procedencia", "Tara (kg)", "Bruto (kg)", "Neto (kg)"];
+            const headers = ["Fecha", "Procedencia", "Cultivo", "Tara (kg)", "Bruto (kg)", "Neto (kg)"];
             let csvContent = headers.join(";") + "\n";
             cargasToExport.forEach(carga => {
                 const fecha = carga.createdAt ? new Date(carga.createdAt.seconds * 1000).toLocaleString('es-ES') : 'N/A';
                 const procedencia = `"${(carga.procedencia || '').replace(/"/g, '""')}"`;
-                const row = [fecha, procedencia, carga.tara, carga.bruto, carga.neto].join(";");
+                const row = [fecha, procedencia, carga.cultivo, carga.tara, carga.bruto, carga.neto].join(";");
                 csvContent += row + "\n";
             });
             const today = new Date();
@@ -559,6 +596,25 @@
             URL.revokeObjectURL(url);
         }
         
+        function calcularNetoActual() {
+            const taraInput = document.getElementById('tara');
+            const brutoInput = document.getElementById('bruto');
+            const netoDisplay = document.getElementById('neto-actual');
+            if (taraInput && brutoInput && netoDisplay) {
+                 netoDisplay.textContent = formatPeso(Math.max(0, (parseFloat(brutoInput.value) || 0) - (parseFloat(taraInput.value) || 0)));
+            }
+        }
+        
+        function listenForCargas() {
+            const cargasRef = getCargasRef();
+            if(!cargasRef) return;
+            unsubscribeCargas = onSnapshot(query(cargasRef), snapshot => {
+                localCargas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                applyCultivoFilter();
+                updateCultivoFilter();
+            });
+        }
+
         // --- INITIALIZATION ---
         async function main() {
             const firebaseConfig = {
@@ -573,59 +629,43 @@
             try {
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app); 
-                db = getFirestore(app); 
-                messaging = getMessaging(app);
-
-                onMessage(messaging, (payload) => {
-                    console.log('Mensaje recibido en primer plano. ', payload);
-                    showMessage(dom.calculatorMessage, `Nueva Carga: ${payload.notification.title}`, true);
-                });
-
-                await signInAnonymously(auth);
+                db = getFirestore(app);
+                
                 onAuthStateChanged(auth, user => {
+                    loadingContainer.classList.add('hidden');
                     if (user) {
                         userId = user.uid;
-                        onSnapshot(collection(db, 'cocheras'), snapshot => {
-                            cocheras = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                            renderCocheraButtons();
-                        });
-                        dom.loadingContainer.classList.add('hidden');
+                        userEmailDisplay.textContent = user.email;
+                        authPage.classList.add('hidden');
+                        appContainer.classList.remove('hidden');
                         navigateTo('selection');
+                        onSnapshot(getCocherasRef(), snapshot => {
+                            cocheras = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            if(document.getElementById('cochera-buttons-container')) {
+                                renderCocheraButtons();
+                            }
+                        });
+                    } else {
+                        userId = null;
+                        appContainer.classList.add('hidden');
+                        authPage.classList.remove('hidden');
                     }
                 });
             } catch(e) {
-                dom.loadingContainer.innerHTML = `<p class="text-red-500 font-bold">Error de conexión: ${e.message}</p>`;
+                loadingContainer.innerHTML = `<p class="text-red-500 font-bold">Error de conexión: ${e.message}</p>`;
             }
         }
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js').then(reg => {
-                    console.log('Service worker registrado.');
-                }).catch(err => {
-                    console.log('Fallo en el registro del Service worker: ', err);
-                });
-            });
-        }
+        loginForm.addEventListener('submit', handleLogin);
+        registerForm.addEventListener('submit', handleRegister);
+        logoutBtn.addEventListener('click', handleLogout);
+        cancelBtn.addEventListener('click', () => confirmModal.classList.add('hidden'));
+        confirmBtn.addEventListener('click', () => { if(actionToConfirm) actionToConfirm(); });
+        cancelEditBtn.addEventListener('click', () => editCargaModal.classList.add('hidden'));
+        confirmEditBtn.addEventListener('click', handleConfirmEdit);
+        cancelEditCocheraBtn.addEventListener('click', () => editCocheraModal.classList.add('hidden'));
+        confirmEditCocheraBtn.addEventListener('click', handleConfirmEditCochera);
         
-        // Event Listeners
-        dom.createCocheraBtn.addEventListener('click', handleCreateCochera);
-        dom.cocheraButtonsContainer.addEventListener('click', handleHomePageClick);
-        dom.backToSelectionBtn.addEventListener('click', handleBackToSelection);
-        dom.agregarCargaBtn.addEventListener('click', agregarCarga);
-        dom.listaCargas.addEventListener('click', handleTableActions);
-        dom.confirmBtn.addEventListener('click', () => { if(actionToConfirm) actionToConfirm(); });
-        dom.cancelBtn.addEventListener('click', closeConfirmModal);
-        dom.cancelEditBtn.addEventListener('click', () => dom.editCargaModal.classList.add('hidden'));
-        dom.confirmEditBtn.addEventListener('click', handleConfirmEdit);
-        dom.notificationBtn.addEventListener('click', requestNotificationPermission);
-        dom.exportCsvBtn.addEventListener('click', () => {
-             const cocheraName = cocheras.find(c => c.id === selectedCocheraId)?.name || 'desconocida';
-             exportToCSV(localCargas, cocheraName);
-        });
-        dom.inputTara.addEventListener('input', calcularNetoActual);
-        dom.inputBruto.addEventListener('input', calcularNetoActual);
-
         main();
     </script>
 </body>
