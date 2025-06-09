@@ -216,7 +216,7 @@
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
                     console.log('Permiso para notificaciones concedido.');
-                    const fcmToken = await getToken(messaging, { vapidKey: 'TU_VAPID_KEY_DE_FIREBASE' }); // **IMPORTANTE: Reemplazar**
+                    const fcmToken = await getToken(messaging, { vapidKey: 'do2CmzhIptS1XZegtxfudefdTtbWb7HDHg1yWE8Z0e8' }); // **IMPORTANTE: Reemplazar**
                     if (fcmToken) {
                         console.log('FCM Token:', fcmToken);
                         // Guardar el token en Firestore
