@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Carga por Cocheras</title>
+    <!-- Enlace al Manifest para PWA -->
+    <link rel="manifest" href="manifest.json">
+    <!-- Tema para la barra de estado en móviles -->
+    <meta name="theme-color" content="#ffffff">
     <!-- Incluyendo Tailwind CSS para un diseño moderno -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Incluyendo la fuente Inter -->
@@ -300,13 +304,13 @@
 
         // --- COCHERA MANAGEMENT ---
         function renderCocheraButtons() {
-            cocheraButtonsContainer.innerHTML = ''; // Clear existing buttons
+            cocheraButtonsContainer.innerHTML = '';
             if (cocheras.length === 0) {
                  cocheraButtonsContainer.innerHTML = `<p class="text-gray-500 text-center col-span-full">No hay cocheras creadas. ¡Crea una para empezar!</p>`;
             }
             cocheras.forEach(cochera => {
                 const imageUrl = cochera.imageUrl || '';
-                const bgStyle = imageUrl ? `background-image: url(${imageUrl})` : '';
+                const bgStyle = imageUrl ? `background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${imageUrl})` : '';
                 const bgColorClass = imageUrl ? '' : 'bg-blue-600 hover:bg-blue-700';
                 
                 const buttonHTML = `
@@ -314,7 +318,6 @@
                         <button name="view-cochera" data-id="${cochera.id}" 
                                 class="w-full h-48 flex items-center justify-center p-4 text-white font-bold text-3xl rounded-lg shadow-lg transition transform group-hover:scale-105 cochera-button-bg ${bgColorClass}" 
                                 style="${bgStyle}">
-                            <div class="absolute inset-0 bg-black opacity-40 rounded-lg"></div>
                             <span class="relative z-10">${cochera.name}</span>
                         </button>
                         <button name="delete-cochera" data-id="${cochera.id}" data-name="${cochera.name}" class="absolute top-3 right-3 p-1 bg-red-600 rounded-full text-white hover:bg-red-700 z-20">
@@ -335,11 +338,10 @@
             const file = cocheraImageInput.files[0];
             let imageUrl = null;
             if (file) {
-                // This is a basic implementation. For production, upload to Firebase Storage instead.
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 await new Promise(resolve => reader.onload = resolve);
-                imageUrl = reader.result; // This can be a very long string, not ideal for Firestore.
+                imageUrl = reader.result;
             }
 
             await addDoc(collection(db, 'cocheras'), { name, lastTara: 0, imageUrl });
