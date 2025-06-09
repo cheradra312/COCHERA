@@ -6,9 +6,10 @@
     <title>Calculadora de Carga por Cocheras</title>
     <!-- Enlace al Manifest para PWA -->
     <link rel="manifest" href="manifest.json">
-    <!-- Tema para la barra de estado en móviles -->
-    <meta name="theme-color" content="#ffffff">
-    <!-- Incluyendo Tailwind CSS para un diseño moderno -->
+    <!-- Icono para Apple y tema de color -->
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    <meta name="theme-color" content="#4f46e5">
+    <!-- Incluyendo Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Incluyendo la fuente Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -87,30 +88,29 @@
                     </div>
                 </header>
 
-                <!-- Formulario para agregar cargas -->
                 <div class="space-y-6 mb-8">
                     <div>
-                        <label for="procedencia" class="text-sm font-medium text-gray-700">Procedencia de la Carga</label>
-                        <input type="text" id="procedencia" placeholder="Ej: Proveedor A, Matrícula B-1234-C" class="mt-1 w-full px-4 py-2 text-lg bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <label for="procedencia" class="text-sm font-medium text-gray-700">Procedencia</label>
+                        <input type="text" id="procedencia" placeholder="Ej: Proveedor A" class="mt-1 w-full px-4 py-2 text-lg bg-gray-50 border-gray-300 rounded-lg">
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
                         <div class="space-y-2">
-                            <label for="tara" class="text-sm font-medium text-gray-700">Peso Tara (kg)</label>
-                            <input type="number" id="tara" placeholder="Ej: 1500" class="w-full px-4 py-2 text-lg bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <label for="tara" class="text-sm font-medium text-gray-700">Tara (kg)</label>
+                            <input type="number" id="tara" placeholder="1500" class="w-full px-4 py-2 text-lg bg-gray-50 border-gray-300 rounded-lg">
                         </div>
                         <div class="space-y-2">
-                            <label for="bruto" class="text-sm font-medium text-gray-700">Peso Bruto (kg)</label>
-                            <input type="number" id="bruto" placeholder="Ej: 10000" class="w-full px-4 py-2 text-lg bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <label for="bruto" class="text-sm font-medium text-gray-700">Bruto (kg)</label>
+                            <input type="number" id="bruto" placeholder="10000" class="w-full px-4 py-2 text-lg bg-gray-50 border-gray-300 rounded-lg">
                         </div>
                         <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg text-center md:text-left h-full flex flex-col justify-center">
-                            <p class="text-sm font-medium text-blue-800">Peso Neto Actual</p>
+                            <p class="text-sm font-medium text-blue-800">Neto Actual</p>
                             <p id="neto-actual" class="text-2xl font-bold text-blue-900">0.00 kg</p>
                         </div>
                     </div>
                 </div>
                 <div class="flex justify-center mb-6">
-                    <button id="agregar-carga-btn" class="flex items-center justify-center w-full md:w-auto bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all disabled:opacity-75 disabled:cursor-wait">
-                        <span id="button-text">Guardar Carga en la Lista</span>
+                    <button id="agregar-carga-btn" class="flex items-center justify-center w-full md:w-auto bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-all disabled:opacity-75 disabled:cursor-wait">
+                        <span id="button-text">Guardar Carga</span>
                         <div id="button-spinner" class="spinner spinner-button ml-3 hidden"></div>
                     </button>
                 </div>
@@ -118,7 +118,7 @@
                      <div id="calculator-message" class="hidden px-4 py-3 rounded-lg relative text-center"></div>
                 </div>
                 <div class="overflow-x-auto">
-                    <h2 class="text-xl font-semibold mb-4 text-center md:text-left">Lista de Cargas</h2>
+                    <h2 class="text-xl font-semibold mb-4 text-center md:text-left">Cargas</h2>
                     <table class="w-full bg-white border border-gray-200 rounded-lg shadow">
                         <thead class="bg-gray-50">
                             <tr>
@@ -134,7 +134,7 @@
                         <tbody id="lista-cargas" class="divide-y divide-gray-200"></tbody>
                         <tfoot class="bg-gray-100 font-bold">
                             <tr>
-                                <td colspan="5" class="p-3 text-right text-lg text-gray-800">Total Neto Acumulado:</td>
+                                <td colspan="5" class="p-3 text-right text-lg text-gray-800">Total Neto:</td>
                                 <td id="total-neto" class="p-3 text-left text-2xl text-blue-700">0.00 kg</td>
                                 <td class="p-3"></td>
                             </tr>
@@ -145,38 +145,31 @@
         </div>
     </div>
     
-    <!-- Modal de Confirmación -->
-    <div id="confirm-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <!-- Modales -->
+    <div id="confirm-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="relative mx-auto p-5 border w-full max-w-sm shadow-lg rounded-md bg-white">
             <div class="mt-3 text-center">
                 <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                    <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                    </svg>
+                    <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                 </div>
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">Confirmar Acción</h3>
                 <div class="mt-2 px-7 py-3">
                     <p id="confirm-message" class="text-sm text-gray-500"></p>
                 </div>
                 <div id="code-input-container" class="hidden mt-4 px-7">
-                    <label for="security-code" class="text-sm font-medium text-gray-700">Código de Seguridad</label>
-                    <input type="password" id="security-code" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="****">
+                    <label for="security-code" class="sr-only">Código de Seguridad</label>
+                    <input type="password" id="security-code" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Código de Seguridad">
                     <p id="modal-error-message" class="text-red-500 text-xs mt-1 hidden"></p>
                 </div>
                 <div class="items-center px-4 py-3 mt-4 space-x-4">
-                    <button id="cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-900 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-300">
-                        Cancelar
-                    </button>
-                    <button id="confirm-btn" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-red-700">
-                        Eliminar
-                    </button>
+                    <button id="cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-900 rounded-md w-auto hover:bg-gray-300">Cancelar</button>
+                    <button id="confirm-btn" class="px-4 py-2 bg-red-600 text-white rounded-md w-auto hover:bg-red-700">Eliminar</button>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Modal de Edición de Carga -->
-    <div id="edit-carga-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div id="edit-carga-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="relative mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
             <h3 class="text-xl leading-6 font-medium text-gray-900 mb-4">Editar Carga</h3>
             <div class="space-y-4">
@@ -186,11 +179,11 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                      <div>
-                        <label for="edit-tara" class="text-sm font-medium text-gray-700">Peso Tara (kg)</label>
+                        <label for="edit-tara" class="text-sm font-medium text-gray-700">Tara (kg)</label>
                         <input type="number" id="edit-tara" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
                     </div>
                      <div>
-                        <label for="edit-bruto" class="text-sm font-medium text-gray-700">Peso Bruto (kg)</label>
+                        <label for="edit-bruto" class="text-sm font-medium text-gray-700">Bruto (kg)</label>
                         <input type="number" id="edit-bruto" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md">
                     </div>
                 </div>
@@ -201,12 +194,8 @@
                 </div>
             </div>
             <div class="items-center px-4 py-3 mt-6 text-right space-x-4">
-                <button id="cancel-edit-btn" class="px-4 py-2 bg-gray-200 text-gray-900 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-300">
-                    Cancelar
-                </button>
-                <button id="confirm-edit-btn" class="px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-blue-700">
-                    Guardar Cambios
-                </button>
+                <button id="cancel-edit-btn" class="px-4 py-2 bg-gray-200 text-gray-900 rounded-md w-auto hover:bg-gray-300">Cancelar</button>
+                <button id="confirm-edit-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md w-auto hover:bg-blue-700">Guardar Cambios</button>
             </div>
         </div>
     </div>
@@ -565,6 +554,16 @@
             }
         }
         
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js').then(reg => {
+                    console.log('Service worker registrado con éxito.', reg.scope);
+                }).catch(err => {
+                    console.log('Fallo en el registro del Service worker: ', err);
+                });
+            });
+        }
+
         // Event Listeners
         createCocheraBtn.addEventListener('click', handleCreateCochera);
         cocheraButtonsContainer.addEventListener('click', handleHomePageClick);
