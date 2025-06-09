@@ -1,21 +1,28 @@
 {
-  "name": "Calculadora de Cargas",
+  "name": "Calculadora de Cargas de Cocheras",
   "short_name": "Cargas",
-  "start_url": "/index.html",
+  "description": "Una aplicación para gestionar el peso de cargas por cocheras.",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "background_color": "#f3f4f6",
   "theme_color": "#4f46e5",
-  "description": "Una aplicación para calcular el peso neto de cargas por cocheras.",
   "icons": [
     {
-      "src": "https://placehold.co/192x192/4f46e5/ffffff?text=Cargas",
+      "src": "icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://placehold.co/512x512/4f46e5/ffffff?text=Cargas",
+      "src": "icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+        "src": "icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "maskable"
     }
   ]
 }
