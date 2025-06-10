@@ -317,9 +317,14 @@
                             <td class="p-3">${formatPeso(carga.bruto)}</td>
                             <td class="p-3 font-semibold text-green-700">${formatPeso(carga.neto)}</td>
                             <td class="p-3 text-center">
-                                <button name="edit-btn" class="text-blue-600 hover:text-blue-800 transition ${!isEditable ? 'opacity-25 cursor-not-allowed' : ''}" data-id="${carga.id}" ${!isEditable ? 'disabled' : ''}>
-                                    <svg class="h-5 w-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                </button>
+                                <div class="flex justify-center items-center space-x-2">
+                                    <button name="edit-btn" class="text-blue-600 hover:text-blue-800 transition ${!isEditable ? 'opacity-25 cursor-not-allowed' : ''}" data-id="${carga.id}" ${!isEditable ? 'disabled' : ''}>
+                                        <svg class="h-5 w-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                    </button>
+                                     <button name="delete-btn" class="text-red-600 hover:text-red-800 transition" data-id="${carga.id}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    </button>
+                                </div>
                             </td>
                         </tr>`;
                 });
@@ -332,13 +337,13 @@
             const cultivoFilter = document.getElementById('cultivo-filter');
             if(!filterContainer || !cultivoFilter) return;
 
-            const cultivos = [...new Set(localCargas.map(c => c.cultivo))];
-            if (cultivos.length > 1) {
+            const cultivos = [...new Set(localCargas.map(c => c.cultivo).filter(c => c))];
+            if (localCargas.length > 0) {
                 filterContainer.classList.remove('hidden');
                 const currentFilter = cultivoFilter.value;
                 cultivoFilter.innerHTML = '<option value="Todos">Todos los Cultivos</option>';
                 cultivos.forEach(c => cultivoFilter.innerHTML += `<option value="${c}">${c}</option>`);
-                cultivoFilter.value = currentFilter;
+                cultivoFilter.value = currentFilter && cultivos.includes(currentFilter) ? currentFilter : 'Todos';
             } else {
                 filterContainer.classList.add('hidden');
             }
@@ -349,6 +354,19 @@
             const selectedCultivo = cultivoFilter ? cultivoFilter.value : 'Todos';
             const filtered = selectedCultivo === 'Todos' ? localCargas : localCargas.filter(c => c.cultivo === selectedCultivo);
             renderTabla(filtered);
+        }
+        
+        function openConfirmModal(message, onConfirm, requireCode = false) {
+            confirmMessage.textContent = message;
+            actionToConfirm = onConfirm;
+            codeInputContainer.classList.toggle('hidden', !requireCode);
+            securityCodeInput.value = '';
+            modalErrorMessage.classList.add('hidden');
+            confirmModal.classList.remove('hidden');
+        }
+        function closeConfirmModal() {
+            confirmModal.classList.add('hidden');
+            actionToConfirm = null;
         }
 
         // --- AUTH LOGIC ---
@@ -488,6 +506,8 @@
         
         function handleTableActions(e) {
             const editButton = e.target.closest('button[name="edit-btn"]');
+            const deleteButton = e.target.closest('button[name="delete-btn"]');
+
             if (editButton) {
                 docIdToEdit = editButton.dataset.id;
                 const cargaToEdit = localCargas.find(c => c.id === docIdToEdit);
@@ -496,8 +516,22 @@
                     editTaraInput.value = cargaToEdit.tara;
                     editBrutoInput.value = cargaToEdit.bruto;
                     editCultivoSelect.value = cargaToEdit.cultivo || 'Cebada';
+                    editSecurityCodeInput.value = '';
+                    editModalError.classList.add('hidden');
                     editCargaModal.classList.remove('hidden');
                 }
+            } else if (deleteButton) {
+                const docIdToDelete = deleteButton.dataset.id;
+                openConfirmModal("Para eliminar la carga, por favor ingrese el código de seguridad.", async () => {
+                    if (securityCodeInput.value !== SECURITY_CODE) {
+                        modalErrorMessage.textContent = "Código incorrecto."; modalErrorMessage.classList.remove('hidden'); return;
+                    }
+                    try {
+                        await deleteDoc(doc(getCargasRef(), docIdToDelete));
+                        showMessage(document.getElementById('calculator-message'), "Carga eliminada.", true);
+                    } catch (error) { showMessage(document.getElementById('calculator-message'), "No se pudo eliminar la carga.", false); }
+                    closeConfirmModal();
+                }, true);
             }
         }
         
@@ -546,6 +580,9 @@
             const cocheraToEdit = cocheras.find(c => c.id === id);
             if (cocheraToEdit) {
                 editCocheraNameInput.value = cocheraToEdit.name;
+                editCocheraImageInput.value = '';
+                editCocheraSecurityCodeInput.value = '';
+                editCocheraModalError.classList.add('hidden');
                 editCocheraModal.classList.remove('hidden');
             }
         }
@@ -610,8 +647,8 @@
             if(!cargasRef) return;
             unsubscribeCargas = onSnapshot(query(cargasRef), snapshot => {
                 localCargas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                applyCultivoFilter();
                 updateCultivoFilter();
+                applyCultivoFilter();
             });
         }
 
@@ -659,7 +696,7 @@
         loginForm.addEventListener('submit', handleLogin);
         registerForm.addEventListener('submit', handleRegister);
         logoutBtn.addEventListener('click', handleLogout);
-        cancelBtn.addEventListener('click', () => confirmModal.classList.add('hidden'));
+        cancelBtn.addEventListener('click', closeConfirmModal);
         confirmBtn.addEventListener('click', () => { if(actionToConfirm) actionToConfirm(); });
         cancelEditBtn.addEventListener('click', () => editCargaModal.classList.add('hidden'));
         confirmEditBtn.addEventListener('click', handleConfirmEdit);
