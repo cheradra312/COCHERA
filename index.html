@@ -11,6 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js para los gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         input::placeholder { color: #9ca3af; }
@@ -183,6 +185,7 @@
         let actionToConfirm = null;
         let docIdToEdit = null;
         let cocheraIdToEdit = null;
+        let chartInstance = null;
         
         // --- TEMPLATES ---
         const selectionPageHTML = `
@@ -215,6 +218,7 @@
                         <button id="export-csv-btn" class="bg-gray-700 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-gray-800">Exportar a CSV</button>
                     </div>
                 </header>
+                 <div class="bg-white p-4 rounded-lg shadow mb-6"><canvas id="cargas-chart"></canvas></div>
                 <div class="space-y-6 mb-8">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -330,6 +334,7 @@
                 });
             }
             document.getElementById('total-neto').textContent = formatPeso(cargasOrdenadas.reduce((sum, c) => sum + c.neto, 0));
+            renderChart(cargasOrdenadas);
         }
 
         function updateCultivoFilter() {
@@ -443,6 +448,7 @@
         function handleBackToSelection() {
             if (unsubscribeCargas) unsubscribeCargas();
             localCargas = []; selectedCocheraId = null;
+            if (chartInstance) chartInstance.destroy();
             navigateTo('selection');
         }
 
@@ -649,6 +655,51 @@
                 localCargas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 updateCultivoFilter();
                 applyCultivoFilter();
+            });
+        }
+        
+        function renderChart(cargasToRender) {
+            const chartEl = document.getElementById('cargas-chart');
+            if (!chartEl) return;
+            const ctx = chartEl.getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            const cargasValidas = cargasToRender.filter(c => c.createdAt && c.createdAt.seconds).sort((a,b) => a.createdAt.seconds - b.createdAt.seconds);
+            if (cargasValidas.length === 0) return;
+
+            const labels = cargasValidas.map(c => new Date(c.createdAt.seconds * 1000).toLocaleString('es-ES', { hour: '2-digit', minute: '2-digit' }));
+            
+            const cultivos = [...new Set(cargasValidas.map(c => c.cultivo || 'Otros'))];
+            const cultivoColors = { 'Cebada': 'rgba(234, 179, 8, 1)', 'Trigo': 'rgba(202, 138, 4, 1)', 'Leguminosas': 'rgba(22, 163, 74, 1)', 'Otros': 'rgba(107, 114, 128, 1)' };
+            
+            const datasets = cultivos.map(cultivo => {
+                const dataAcumulada = [];
+                let totalAcumulado = 0;
+                cargasValidas.forEach(carga => {
+                    if ((carga.cultivo || 'Otros') === cultivo) {
+                        totalAcumulado += carga.neto;
+                    }
+                    dataAcumulada.push(totalAcumulado);
+                });
+
+                return {
+                    label: cultivo,
+                    data: dataAcumulada,
+                    borderColor: cultivoColors[cultivo] || cultivoColors['Otros'],
+                    backgroundColor: (cultivoColors[cultivo] || cultivoColors['Otros']).replace('1)', '0.2)'),
+                    fill: false,
+                    tension: 0.1
+                };
+            });
+            
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Kilos Netos Acumulados' } }, x: { title: { display: true, text: 'Hora de Carga' } } },
+                    plugins: { legend: { position: 'top' } }
+                }
             });
         }
 
