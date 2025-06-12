@@ -177,7 +177,6 @@
         
         // --- App State ---
         let db, auth;
-        let userId = null;
         let cocheras = [];
         let localCargas = [];
         let selectedCocheraId = null;
@@ -218,7 +217,7 @@
                         <button id="export-csv-btn" class="bg-gray-700 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-gray-800">Exportar a CSV</button>
                     </div>
                 </header>
-                 <div class="bg-white p-4 rounded-lg shadow mb-6"><canvas id="cargas-chart"></canvas></div>
+                <div class="bg-white p-4 rounded-lg shadow mb-6"><canvas id="cargas-chart"></canvas></div>
                 <div class="space-y-6 mb-8">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -493,6 +492,7 @@
             const bruto = parseFloat(brutoInput.value);
             const neto = bruto - tara;
             const cultivo = cultivoSelect.value;
+            const authorEmail = auth.currentUser.email;
 
             if (!procedencia || isNaN(tara) || isNaN(bruto) || bruto < tara) {
                 showMessage(messageEl, "Datos inválidos.", false);
@@ -500,7 +500,7 @@
                 const cargasRef = getCargasRef();
                 if(cargasRef) {
                     try {
-                        await addDoc(cargasRef, { procedencia, cultivo, tara, bruto, neto, createdAt: serverTimestamp() });
+                        await addDoc(cargasRef, { procedencia, cultivo, tara, bruto, neto, createdAt: serverTimestamp(), authorEmail });
                         await updateDoc(doc(getCocherasRef(), selectedCocheraId), { lastTara: tara });
                         showMessage(messageEl, "Carga guardada con éxito.", true);
                         procedenciaInput.value = ''; brutoInput.value = ''; procedenciaInput.focus();
@@ -667,28 +667,28 @@
             const cargasValidas = cargasToRender.filter(c => c.createdAt && c.createdAt.seconds).sort((a,b) => a.createdAt.seconds - b.createdAt.seconds);
             if (cargasValidas.length === 0) return;
 
-            const labels = cargasValidas.map(c => new Date(c.createdAt.seconds * 1000).toLocaleString('es-ES', { hour: '2-digit', minute: '2-digit' }));
+            const labels = cargasValidas.map(c => new Date(c.createdAt.seconds * 1000).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }));
             
             const cultivos = [...new Set(cargasValidas.map(c => c.cultivo || 'Otros'))];
             const cultivoColors = { 'Cebada': 'rgba(234, 179, 8, 1)', 'Trigo': 'rgba(202, 138, 4, 1)', 'Leguminosas': 'rgba(22, 163, 74, 1)', 'Otros': 'rgba(107, 114, 128, 1)' };
             
             const datasets = cultivos.map(cultivo => {
-                const dataAcumulada = [];
                 let totalAcumulado = 0;
-                cargasValidas.forEach(carga => {
+                const dataAcumulada = cargasValidas.map(carga => {
                     if ((carga.cultivo || 'Otros') === cultivo) {
                         totalAcumulado += carga.neto;
                     }
-                    dataAcumulada.push(totalAcumulado);
+                    return totalAcumulado;
                 });
 
                 return {
-                    label: cultivo,
+                    label: `Acumulado ${cultivo}`,
                     data: dataAcumulada,
                     borderColor: cultivoColors[cultivo] || cultivoColors['Otros'],
                     backgroundColor: (cultivoColors[cultivo] || cultivoColors['Otros']).replace('1)', '0.2)'),
                     fill: false,
-                    tension: 0.1
+                    tension: 0.1,
+                    stepped: true,
                 };
             });
             
@@ -697,7 +697,7 @@
                 data: { labels, datasets },
                 options: {
                     responsive: true,
-                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Kilos Netos Acumulados' } }, x: { title: { display: true, text: 'Hora de Carga' } } },
+                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Kilos Netos Acumulados' } }, x: { title: { display: true, text: 'Fecha y Hora de Carga' } } },
                     plugins: { legend: { position: 'top' } }
                 }
             });
@@ -722,7 +722,7 @@
                 onAuthStateChanged(auth, user => {
                     loadingContainer.classList.add('hidden');
                     if (user) {
-                        userId = user.uid;
+                        currentUser = user;
                         userEmailDisplay.textContent = user.email;
                         authPage.classList.add('hidden');
                         appContainer.classList.remove('hidden');
@@ -734,7 +734,7 @@
                             }
                         });
                     } else {
-                        userId = null;
+                        currentUser = null;
                         appContainer.classList.add('hidden');
                         authPage.classList.remove('hidden');
                     }
