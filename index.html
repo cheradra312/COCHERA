@@ -214,10 +214,12 @@
                              <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Registros de <span id="current-cochera-name" class="text-blue-600"></span></h1>
                              <button id="back-to-selection-btn" class="mt-2 text-sm text-blue-500 hover:underline">&larr; Volver</button>
                         </div>
-                        <button id="export-csv-btn" class="bg-gray-700 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-gray-800">Exportar a CSV</button>
+                        <div class="flex items-center gap-4">
+                            <button id="show-chart-btn" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-indigo-700">Ver Gráfica</button>
+                            <button id="export-csv-btn" class="bg-gray-700 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:bg-gray-800">Exportar a CSV</button>
+                        </div>
                     </div>
                 </header>
-                <div class="bg-white p-4 rounded-lg shadow mb-6"><canvas id="cargas-chart"></canvas></div>
                 <div class="space-y-6 mb-8">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -256,6 +258,19 @@
                 </div>
             </div>`;
 
+        const chartPageHTML = `
+            <div class="bg-white rounded-b-xl shadow-lg p-6 md:p-8">
+                <header class="mb-6 pb-4 border-b border-gray-200">
+                    <div class="flex flex-wrap justify-between items-center gap-4">
+                         <div>
+                             <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Gráfico de <span id="current-cochera-name-chart" class="text-blue-600"></span></h1>
+                             <button id="back-to-calculator-btn" class="mt-2 text-sm text-blue-500 hover:underline">&larr; Volver a Registros</button>
+                        </div>
+                    </div>
+                </header>
+                <div class="bg-white p-4 rounded-lg shadow mb-6"><canvas id="cargas-chart"></canvas></div>
+            </div>`;
+
         // --- UTILITY FUNCTIONS ---
         const formatPeso = (n) => `${Math.round(n)} kg`;
         function showMessage(el, msg, isSuccess = true) {
@@ -276,8 +291,12 @@
                 document.getElementById('current-cochera-name').textContent = cochera.name;
                 document.getElementById('tara').value = cochera.lastTara || '';
                 attachCalculatorPageListeners();
-                listenForCargas();
-                calcularNetoActual();
+                listenForCargas(cochera.id);
+            } else if (page === 'chart') {
+                mainContent.innerHTML = chartPageHTML;
+                document.getElementById('current-cochera-name-chart').textContent = cochera.name;
+                document.getElementById('back-to-calculator-btn').addEventListener('click', () => navigateTo('calculator', cochera));
+                renderChart(localCargas);
             }
         }
         
@@ -333,7 +352,6 @@
                 });
             }
             document.getElementById('total-neto').textContent = formatPeso(cargasOrdenadas.reduce((sum, c) => sum + c.neto, 0));
-            renderChart(cargasOrdenadas);
         }
 
         function updateCultivoFilter() {
@@ -425,6 +443,7 @@
             document.getElementById('lista-cargas').addEventListener('click', handleTableActions);
             document.getElementById('tara').addEventListener('input', calcularNetoActual);
             document.getElementById('bruto').addEventListener('input', calcularNetoActual);
+            document.getElementById('show-chart-btn').addEventListener('click', () => navigateTo('chart', cocheras.find(c => c.id === selectedCocheraId)));
             const cultivoFilter = document.getElementById('cultivo-filter');
             if(cultivoFilter) cultivoFilter.addEventListener('change', applyCultivoFilter);
         }
@@ -745,7 +764,7 @@
         loginForm.addEventListener('submit', handleLogin);
         registerForm.addEventListener('submit', handleRegister);
         logoutBtn.addEventListener('click', handleLogout);
-        cancelBtn.addEventListener('click', () => confirmModal.classList.add('hidden'));
+        cancelBtn.addEventListener('click', closeConfirmModal);
         confirmBtn.addEventListener('click', () => { if(actionToConfirm) actionToConfirm(); });
         cancelEditBtn.addEventListener('click', () => editCargaModal.classList.add('hidden'));
         confirmEditBtn.addEventListener('click', handleConfirmEdit);
