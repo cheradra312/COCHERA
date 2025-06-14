@@ -722,7 +722,6 @@
                 onAuthStateChanged(auth, user => {
                     loadingContainer.classList.add('hidden');
                     if (user) {
-                        currentUser = user;
                         userEmailDisplay.textContent = user.email;
                         authPage.classList.add('hidden');
                         appContainer.classList.remove('hidden');
@@ -734,7 +733,6 @@
                             }
                         });
                     } else {
-                        currentUser = null;
                         appContainer.classList.add('hidden');
                         authPage.classList.remove('hidden');
                     }
@@ -747,7 +745,7 @@
         loginForm.addEventListener('submit', handleLogin);
         registerForm.addEventListener('submit', handleRegister);
         logoutBtn.addEventListener('click', handleLogout);
-        cancelBtn.addEventListener('click', closeConfirmModal);
+        cancelBtn.addEventListener('click', () => confirmModal.classList.add('hidden'));
         confirmBtn.addEventListener('click', () => { if(actionToConfirm) actionToConfirm(); });
         cancelEditBtn.addEventListener('click', () => editCargaModal.classList.add('hidden'));
         confirmEditBtn.addEventListener('click', handleConfirmEdit);
